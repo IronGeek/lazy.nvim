@@ -78,6 +78,26 @@ function M.get_tags(repo)
   return ret
 end
 
+function M.get_local_branch(repo)
+  local main = assert(M.head(repo))
+  local branch = main and main:match("ref: refs/heads/(.*)")
+  if branch then
+    return branch
+  end
+
+  -- If we ended up here, we're probably in a detached head state.
+  -- Try finding the previous branch from config.
+  local config = M.get_config(repo)
+  for k, _ in pairs(config) do
+    branch = k:match("branch.(.*).remote")
+    if branch then
+      return branch
+    end
+  end
+
+  return nil
+end
+
 ---@param plugin LazyPlugin
 ---@return string?
 function M.get_branch(plugin)
@@ -95,8 +115,7 @@ function M.get_branch(plugin)
     end
 
     -- fallback to local HEAD
-    main = assert(M.head(plugin.dir))
-    return main and main:match("ref: refs/heads/(.*)")
+    return M.get_local_branch(plugin.dir)
   end
 end
 

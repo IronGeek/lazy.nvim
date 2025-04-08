@@ -1,4 +1,5 @@
 local Config = require("lazy.core.config")
+local Git = require("lazy.manage.git")
 local Meta = require("lazy.core.meta")
 local Pkg = require("lazy.pkg")
 local Util = require("lazy.core.util")
@@ -339,6 +340,8 @@ function M.load()
   if lazy then
     lazy.lazy = true
     lazy.dir = Config.me
+    lazy.url = Git.get_origin(lazy.dir)
+    lazy.branch = Git.get_local_branch(lazy.dir)
     lazy.config = function()
       error("lazy config should not be called")
     end
