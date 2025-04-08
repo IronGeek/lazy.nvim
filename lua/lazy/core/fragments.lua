@@ -20,6 +20,10 @@ local function next_id()
   return M._fid
 end
 
+local function format_url(format, url)
+  return type(format) == "function" and format(url) or format:format(url)
+end
+
 ---@param spec LazySpecLoader
 ---@return LazyFragments
 function M.new(spec)
@@ -113,7 +117,7 @@ function M:add(plugin)
         fragment.url = fragment.url or plugin[1]
       else
         fragment.name = fragment.name or plugin[1]:sub(slash + 1)
-        fragment.url = fragment.url or Config.options.git.url_format:format(plugin[1])
+        fragment.url = fragment.url or format_url(Config.options.git.url_format, plugin[1])
       end
     else
       fragment.name = fragment.name or plugin[1]
